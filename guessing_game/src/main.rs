@@ -1,0 +1,17 @@
+use std::io;
+
+fn main()
+{
+    println!("Guess the name!");
+
+    println!("Please input your guess.");
+
+    // Mutable variable to store user guess
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&mut guess)
+        .expect("Failed to read line");
+
+    println!("You guessed: {guess}");
+}
