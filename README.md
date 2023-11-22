@@ -1,0 +1,2 @@
+# PURPOSE
+This repository will hold any code I develop as I go through the `The Rust Programming Language` by _Steve Klabnik_, _Carol Nichols_,  and the _Rust Community_. As of the start of this repo - 11/22/2023 - I am on Rust 1.74.0.
