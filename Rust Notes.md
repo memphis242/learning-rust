@@ -37,7 +37,7 @@
 
 3. To check whether you have installed Rust correctly and what version you have: `rustc --version`. You'll in return get (if successfully installed) `rustc x.y.z (abcabcabc yyyy-mm-dd)` (i.e., the commit hash and release date!).
 
-4. To look at the (thorough) documentation that comes with Rust, you can start with `rust doc`, and if you want to open **The Book**, `rust doc --book`.
+4. To look at the (thorough) documentation that comes with Rust, you can start with `rustup doc`, and if you want to open **The Book**, `rustup doc --book`.
 
 ## HELLO WORLD!
 
@@ -204,6 +204,8 @@ rand = "0.8.5"
 
     b. More information regarding Cargo and its ecosystem will be provided in Chapter 14.
 
+### Generating a Random Number
+
 Let's use the `rand` crate already!
 
 ```
@@ -212,6 +214,145 @@ use rand::Rng;
 
 fn main()
 {
-    
+    println!("Guess the number!");
+
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+
+    println!("The secret number is: {secret_number}");
+
+    println!("Please input your guess:");
+
+    let mut guess = String::new();
+
+    io::stdin()
+        .read_line(&mut guess)
+        .expect("Failed to read line!");
+
+    println!("You guessed: {guess});
 }
 ```
+1. So really, all we added was `use rand::Rng` and `let secret_number = rand::thread_rng().gen_range(1..=100)`.
+
+2. The `use rand::Rng` brings the `rand` library into scope and also specified the `Rng` **trait**. The `Rng` trait "defines methods that random number generators implement, and this trait _must be in scope_ for us to use those methods." Chapter 10 will cover traits in more detail.
+
+3. The `rand::thread_rng()` returns a generator type that _is also local to the current thread_ and _seeded by the OS_.
+
+4. The `gen_range` method of the random number generator is _defined by the_ `Rng` trait that we brought into scope and it takes a **range expression** as an argument.
+
+5. The range expression used here is of the form `start..=end` which is an _inclusive_ range defining upper and lower bounds. To learn more about the `rand` crate, every crate comes with documentation that you can access using `cargo doc --open` and clicking on the crate name on the left pane.
+
+## COMPARING THE GUESS TO THE SECRET NUMBER
+```
+use rand::Rng;
+use std::cmp::Ordering;
+use std::io;
+
+fn main()
+{
+    println!("Guess the name!");
+
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+
+    println!("The secret number is: {secret_number});
+
+    println!("Please input your guess:");
+
+    let mut guess = String::new();
+    io::stdin()
+        .read_line(&mut guess)
+        .expect("Failed to read line!");
+    let guess: u32 = guess.trim().parse().expect("Please type a number!");
+
+    println!("You guessed: {guess}");
+
+    match guess.cmp(&secret_number)
+    {
+        Ordering::Less      ==> println!("Too small!");
+        Ordering::Greater   ==> println!("Too big!");
+        Ordering::Equal     ==> println!("You win!");
+    }
+}
+```
+1. First we add another `use` statement, bringing in a _type_ called `std::cmp::Ordering` into scope from the standard library. The `Ordering` type is another enum and has variants `Less`, `Greater`, and `Equal`. These are the three outcomes possible from a comparison.
+
+2. Then we add the `match` statement to do the comparison we wanted.
+
+    a. The `cmp` method (_also a library??_) of the string object `guess` does the comparison. It is a method of most types and you pass to it a reference of the other object being compared - in this case the secret number. It returns an `Ordering` type.
+
+    b. We use the `match` statement to decide what to do based on what is returned from `guess.cmp(&secret_number)` (_kind of like a `switch` statement?_).
+
+    c. A `match` expression is made up of **arms**. An arm consists of a _pattern_ to match against, and the code that should be run if the value given to `match` fits that arm's pattern. Rust will look through each arm from top to bottom until it finds a _match_ and then executes that arm's code and exits (it does not check any further arms).
+
+3. Then, in recognizing the `cmp` method cannot be done on a string vs an integer, we convert the `guess` string into an integer. That's where the line `let guess: u32 = guess.trim().parse().expect("Please input a number!");` comes in.
+
+    a. We create a _new_ variable, also called `guess`. This new variable actually **shadows** (i.e., overrides) the previous value and type of `guess` with a new one.
+
+    b. **Shadowing** lets us reuse a variable name rather than creating two unique variables - something like `guess_str` and `guess_num`. More about this is described in Chapter 3 but just know that this is commonly used when converting a value from one type to another.
+
+    c. The `: u32` **annotation** tells Rust what number type we want this new `guess` to be.
+
+    d. The `trim` method on the `guess` string eliminates any _whitespace_ at the beginning and end of the string (which we want to make sure isn't there before we call `parse`). This is always necessary here because the user presses the Enter key to indicate they are done giving input and that Enter key press adds a `\n` to that input buffer. In fact, on windows, a carriage return `\r` is also added. So `trim` removes those extra characters at the end.
+
+    e. The `parse` method does the conversion from string to integer.
+    
+    f. This can easily fail with non-numerical inputs which is why `parse` returns a `Result` type just like `read_line` did. In this case, the `parse` method returns the parsed-value with an `Ok` and something else with an `Err`.
+
+## ALLOWING MULTIPLE GUESSES WITH LOOPING
+
+```
+use rand::Rng;
+use std::cmp::Ordering;
+use std::io;
+
+fn main()
+{
+    println!("Guess the name!");
+
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+
+    println!("The secret number is: {secret_numer}");
+
+    loop
+    {
+        println!("Please input your guess.");
+
+        let mut guess = String::new();
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read input!");
+        let guess: u32 = guess.trim().parse().expect("Please input a number!");
+
+        println!("You guessed: {guess}");
+
+        match guess.cmp(&secret_number)
+        {
+            Ordering::Less      ==> println!("Too small!");
+            Ordering::Greater   ==> println!("Too big!");
+            Ordering::Equal     ==>
+            {
+                println!("You win! :D");
+                break;
+            }
+        }
+    }
+}
+```
+
+1. The `loop` statement there brings in an infinite loop, just like `while(1)` in C.
+
+2. The `break` statement exits the infinite loop.
+
+## HANDLING INVALID INPUT
+Instead of crashing the program when the user inputs a non-number, let's make the game ignore that input and `continue`. We can do that by replacing the `expect` method call with the following:
+```
+let guess: u32 = match guess.trim().parse()
+{
+    Ok(num) => num,
+    Err(_)  => continue,
+};
+```
+1. We switch the `expect` call to a `match` expression! A demonstration of the creativity available with a `match` expression.
+
+2. The `Ok(num)` pattern says "the value held with the `Ok` state". The `Ok(num) ==> num,` statement says "return the number stored inside the `Ok` state.
+
+3. The `Err(_)` is a catchall pattern that says "any `Err` value".
