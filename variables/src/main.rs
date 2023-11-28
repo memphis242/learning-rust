@@ -10,4 +10,12 @@ fn main() {
     }
 
     println!("The value of x after the inner scope is: {x}");
+
+    let spaces = "    ";
+    let spaces = spaces.len();
+    println!("spaces: {spaces}");
+
+    // let mut spaces = "    ";
+    // spaces = spaces.len();
+    // println!("spaces: {spaces}");
 }

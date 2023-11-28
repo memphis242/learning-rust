@@ -37,3 +37,17 @@ let x = x + 1; // new variable, also named x, that shadows the previous value of
 
 println!("The value of x is: {x}"); // will print 6
 ```
+
+   c. An important note about shadowing is when you shadow immutable variables, everything about the variable can change. But when you _kinda shadow_ mutable variables, like so:
+
+```
+let mut spaces = "    ";
+spaces = spaces.len();
+```
+instead of:
+```
+let spaces = "    ";
+let spaces = spaces.len();
+```
+
+   ... you'll actually get a compiler error on the mutable version because _type is **not** allowed to mutate_.
