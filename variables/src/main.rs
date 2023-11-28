@@ -15,7 +15,7 @@ fn main() {
     let spaces = spaces.len();
     println!("spaces: {spaces}");
 
-    // let mut spaces = "    ";
-    // spaces = spaces.len();
-    // println!("spaces: {spaces}");
+    let mut spaces = "    ";
+    spaces = spaces.len();
+    println!("spaces: {spaces}");
 }
